@@ -44,21 +44,15 @@ let xAxis = d3.axisBottom(hourScale);
 if (plot.select("g#y-axis").size() < 1) {
     let xGroup = plot.append("g").attr("id", "x-axis");
 
-    // the drawing is triggered by call()
     xGroup.call(xAxis);
 
-    // notice it is at the top of our svg
-    // we need to translate/shift it down to the bottom
     xGroup.attr("transform", "translate(0," + plotHeight + ")");
 
-    // do the same for our y axix
     let yGroup = plot.append("g").attr("id", "y-axis");
     yGroup.call(yAxis);
     yGroup.attr("transform", "translate(" + 0 + ",0)");
   }
   else {
-    // we need to do this so our chart updates
-    // as we type new letters in our box
     plot.select("g#y-axis").call(yAxis);
   }
 
@@ -66,19 +60,19 @@ if (plot.select("g#y-axis").size() < 1) {
     .data(dataset, function(d) { return d; });
 
 bars.enter().append("rect")
-    // we will style using css
+
     .attr("class", "bar")
-    // the width of our bar is determined by our band scale
+
     .attr("width", hourScale.bandwidth())
-    // we must now map our letter to an x pixel position
+
     .attr("x", function(d) {
       return hourScale();
     })
-// and do something similar for our y pixel position
+
     .attr("y", function(d) {
       return numScale(d);
     })
-    // here it gets weird again, how do we set the bar height?
+
     .attr("height", function(d) {
       return plotHeight - numScale(d);
     })
@@ -90,8 +84,6 @@ bars.transition()
     .attr("y", function(d) { return countScale(d.value); })
     .attr("height", function(d) { return plotHeight - countScale(d); });
 
-  // what about letters that disappeared?
-  // we use the exit selection for those to remove the bars
   bars.exit()
     .each(function(d, i, nodes) {
       console.log("Removing bar for:", d.key);

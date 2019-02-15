@@ -1,5 +1,4 @@
  // javascript
-var dataset = [614, 353, 249, 175, 148, 141, 191, 298, 413, 476, 531, 601, 775, 705, 662, 720, 685];
 
 d3.csv("PoliceBar.csv", function(d) {
   return {
@@ -9,11 +8,15 @@ d3.csv("PoliceBar.csv", function(d) {
 }).then(function(data) {
   console.log(data)
   let margin = {
-    top: 15,
+    top: 40,
     right: 10,
-    bottom: 30,
-    left: 35
+    bottom: 40,
+    left: 55
   };
+
+  var map = d3.map(data, function(d) { return d.key; });
+
+  console.log("help");
 
   var svg = d3.select('svg');
 
@@ -22,17 +25,15 @@ d3.csv("PoliceBar.csv", function(d) {
   let plotHeight = bounds.height - margin.top - margin.bottom;
 
   let numMin = 0;
-  let numMax = d3.max(data.values());
+  let numMax = d3.max(dataset.reverse());
 
   let numScale = d3.scaleLinear()
     .domain([numMin, numMax])
     .range([plotHeight, 0])
     .nice();
 
-  var hours = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
-
   let hourScale = d3.scaleBand()
-    .domain(hours)
+    .domain(map.keys().reverse())
     .rangeRound([0, plotWidth])
     .paddingInner(0.1);
 
@@ -64,7 +65,7 @@ d3.csv("PoliceBar.csv", function(d) {
     }
 
    let bars = plot.selectAll("rect")
-      .data(data.entries(), function(d) { return d.key; });
+      .data(data, function(d) { return d.key; });
 
   bars.enter().append("rect")
 
@@ -87,16 +88,24 @@ d3.csv("PoliceBar.csv", function(d) {
         console.log("Added bar for:", d.key);
       });
 
-  bars.transition()
-      .attr("y", function(d) { return countScale(d.value); })
-      .attr("height", function(d) { return plotHeight - countScale(d.value); });
+  plot.append("text")
+        .attr("x", 0 - (margin.left / 2))             
+        .attr("y", 0 - (margin.top / 2))
+        .attr("text-anchor", "left")  
+        .style("font-size", "16px") 
+        .style("text-decoration", "underline")  
+        .text("Number of Reports Per Hour");
 
-    bars.exit()
-      .each(function(d, i, nodes) {
-        console.log("Removing bar for:", d.key);
-      })
-      .transition()
-      .attr("y", function(d) { return countScale(countMin); })
-      .attr("height", function(d) { return plotHeight - countScale(countMin); })
-      .remove();
+  plot.append("text")
+        .attr("x", (plotWidth / 2))           
+        .attr("y", plotHeight + (margin.bottom / 1.2))
+        .attr("text-anchor", "middle")  
+        .style("font-size", "16px")   
+        .text("Incident Time");
+
+  plot.append("text")
+        .attr("text-anchor", "middle") 
+        .style("font-size", "16px")   
+        .text("Number of Records")
+        .attr("transform", "translate(" + (0 - (margin.left / 1.5)) + "," + (plotHeight/2) + ") rotate(270)");
 });

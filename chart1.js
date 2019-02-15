@@ -16,16 +16,24 @@ d3.csv("PoliceBar.csv", function(d) {
 
   var map = d3.map(data, function(d) { return d.key; });
 
-  console.log("help");
-
   var svg = d3.select('svg');
+
+  var dataset = [];
+  var i = 0;
+  for (i = 0; i < data.length; i++) {
+    dataset[i] = data[i].value;
+  }
+
+  console.log(dataset);
 
   let bounds = svg.node().getBoundingClientRect();
   let plotWidth = bounds.width - margin.right - margin.left;
   let plotHeight = bounds.height - margin.top - margin.bottom;
 
   let numMin = 0;
-  let numMax = d3.max(dataset.reverse());
+  let numMax = d3.max(dataset);
+
+  console.log(numMax);
 
   let numScale = d3.scaleLinear()
     .domain([numMin, numMax])
